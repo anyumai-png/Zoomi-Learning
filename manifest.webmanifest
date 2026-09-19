@@ -1,0 +1,12 @@
+{
+  "name": "生字冒險｜7日記憶訓練",
+  "short_name": "生字冒險",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#fffafc",
+  "theme_color": "#fff7fb",
+  "lang": "zh-Hant",
+  "icons": [
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
