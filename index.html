@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#fff7fb" />
+  <meta name="description" content="17個生字的7日記憶訓練 Web App：讀、解、用、寫。" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <title>生字冒險｜7日記憶訓練</title>
+  <style>
+    :root{
+      --bg:#fffafc;--card:#ffffff;--text:#243047;--muted:#6f7890;--line:#e7e9f1;
+      --pink:#ff7fa8;--pinkSoft:#fff0f5;--yellow:#f7b731;--yellowSoft:#fff7dc;
+      --green:#55b96a;--greenSoft:#effbf0;--blue:#4d9de0;--blueSoft:#eef7ff;
+      --purple:#8d6adf;--purpleSoft:#f4efff;--shadow:0 10px 30px rgba(44,55,92,.08);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:ui-rounded,"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;background:linear-gradient(180deg,#fffafc 0,#fff 55%,#f8fbff 100%);color:var(--text)}
+    button,input,textarea,select{font:inherit}
+    button{cursor:pointer}
+    .app{max-width:1100px;margin:auto;padding:18px 16px 110px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:52px;height:52px;border-radius:18px;display:grid;place-items:center;font-size:28px;background:linear-gradient(135deg,#ffd0df,#fff2ae);box-shadow:var(--shadow)}
+    h1{font-size:clamp(1.35rem,4vw,2rem);margin:0;line-height:1.1}.sub{font-size:.9rem;color:var(--muted);margin-top:4px}
+    .pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 13px;color:var(--text);font-weight:700}
+    .pill.active{background:var(--text);color:#fff;border-color:var(--text)}
+    .hero{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;margin-bottom:16px}
+    .panel{background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+    .heroMain{background:linear-gradient(135deg,#fff1f6 0,#fffaf1 56%,#f2f9ff 100%);position:relative;overflow:hidden}
+    .heroMain:after{content:"";position:absolute;width:160px;height:160px;border-radius:50%;background:#fff6b9;right:-50px;top:-70px;opacity:.7}
+    .eyebrow{font-size:.84rem;color:#7b5a66;font-weight:800;letter-spacing:.06em}.heroTitle{font-size:clamp(1.8rem,6vw,3.1rem);margin:6px 0 8px;font-weight:900;line-height:1.05}.heroTitle .accent{color:#ef5d8b}.heroText{color:var(--muted);max-width:55ch;line-height:1.6}
+    .heroActions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}.primary,.secondary,.ghost,.danger{border:0;border-radius:16px;min-height:46px;padding:11px 16px;font-weight:850}.primary{background:var(--text);color:#fff}.secondary{background:#fff;border:1px solid var(--line);color:var(--text)}.ghost{background:transparent;border:1px dashed #cfd5e4;color:var(--text)}.danger{background:#fff1f1;color:#b83b3b;border:1px solid #ffd0d0}
+    .dayBox{display:flex;flex-direction:column;gap:12px}.dayNum{font-size:3.3rem;font-weight:950;line-height:1;color:#4f617f}.progressTrack{height:12px;background:#edf0f6;border-radius:999px;overflow:hidden}.progressFill{height:100%;background:linear-gradient(90deg,#ff7fa8,#f7b731,#55b96a,#4d9de0);width:0;border-radius:inherit;transition:.3s}.miniStats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.miniStat{background:#fafbfe;border:1px solid var(--line);border-radius:14px;padding:10px;text-align:center}.miniStat b{display:block;font-size:1.05rem}.miniStat span{font-size:.75rem;color:var(--muted)}
+    .sectionHead{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:24px 2px 12px}.sectionHead h2{margin:0;font-size:1.3rem}.sectionHead p{margin:0;color:var(--muted);font-size:.88rem}
+    .wordGrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.wordCard{border:1px solid var(--line);background:#fff;border-radius:18px;padding:14px;min-width:0;position:relative;overflow:hidden;transition:.18s}.wordCard:hover{transform:translateY(-2px);box-shadow:var(--shadow)}.wordIcon{font-size:2rem;line-height:1}.wordName{font-size:1.2rem;font-weight:950;margin-top:8px}.wordMeaning{color:var(--muted);font-size:.86rem;margin-top:4px;min-height:2.6em}.stars{font-size:.84rem;margin-top:9px;letter-spacing:.08em}.scoreDots{display:flex;gap:4px;margin-top:8px}.dot{width:8px;height:8px;border-radius:50%;background:#e5e9f1}.dot.on{background:#55b96a}
+    .modeGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.modeCard{border:1px solid var(--line);background:#fff;border-radius:18px;padding:16px;text-align:left;min-height:130px;transition:.18s}.modeCard:hover{transform:translateY(-2px);box-shadow:var(--shadow)}.modeEmoji{font-size:2rem}.modeCard b{display:block;margin-top:8px;font-size:1rem}.modeCard span{display:block;color:var(--muted);font-size:.84rem;line-height:1.5;margin-top:4px}
+    .nav{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:20;width:min(720px,calc(100% - 24px));display:grid;grid-template-columns:repeat(5,1fr);padding:8px;background:rgba(255,255,255,.92);backdrop-filter:blur(15px);border:1px solid rgba(225,228,238,.95);box-shadow:0 14px 45px rgba(39,50,86,.16);border-radius:22px}.nav button{border:0;background:transparent;border-radius:15px;padding:8px 4px;color:#6e7892;font-size:.75rem;font-weight:800}.nav button strong{display:block;font-size:1.15rem;margin-bottom:3px}.nav button.active{background:#f0f3fa;color:#263149}
+    .view{display:none}.view.active{display:block}
+    .practiceShell{max-width:820px;margin:auto}.practiceTop{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.qCard{background:#fff;border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow);padding:clamp(18px,4vw,32px)}.qType{font-size:.83rem;color:var(--muted);font-weight:900}.qPrompt{font-size:clamp(1.4rem,5vw,2.5rem);font-weight:950;line-height:1.25;margin:14px 0}.qIcon{font-size:4rem;margin:8px 0}.choices{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px}.choice{border:1px solid var(--line);background:#fff;border-radius:16px;padding:14px;text-align:left;font-size:1.05rem;font-weight:850;min-height:54px}.choice:hover{background:#f8faff}.choice.correct{background:#eaffee;border-color:#75c989}.choice.wrong{background:#fff0f0;border-color:#ef8f8f}.choice:disabled{cursor:default}.feedback{margin-top:14px;border-radius:16px;padding:13px 14px;background:#f7f8fb;color:#46516d;display:none}.feedback.show{display:block}.feedback.good{background:#edfbee;color:#286c36}.feedback.bad{background:#fff1f1;color:#9a3737}.qActions{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}
+    .bigWord{font-size:clamp(2.5rem,10vw,5.2rem);font-weight:950;letter-spacing:.08em;text-align:center;margin:16px 0}.homophone{display:inline-flex;gap:8px;align-items:center;background:#f7f0ff;color:#6f4bb5;border-radius:999px;padding:8px 12px;font-weight:800;font-size:.88rem}.clue{background:#fff9df;border:1px solid #f5e39b;border-radius:16px;padding:14px;margin-top:10px;line-height:1.6}
+    .canvasWrap{border:2px dashed #cfd6e7;border-radius:20px;background:#fff;overflow:hidden;margin-top:14px}.canvasWrap canvas{display:block;width:100%;height:280px;touch-action:none}.canvasTools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.answerReveal{font-size:2rem;font-weight:950;text-align:center;padding:12px;background:#f6f8fd;border-radius:16px;margin-top:12px;display:none}.answerReveal.show{display:block}
+    .storyWords{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.storyChip{background:#fff1f5;border:1px solid #ffd1df;border-radius:999px;padding:8px 12px;font-weight:900}.storyExample{display:none;margin-top:14px;background:#f3fbff;border:1px solid #d4eefc;padding:14px;border-radius:16px;line-height:1.7}.storyExample.show{display:block}
+    .mindShell{position:relative}.mindCenter{max-width:320px;margin:0 auto 18px;background:linear-gradient(135deg,#fff0f5,#fff9d8,#eef8ff);border:2px solid #e5d7ea;border-radius:30px;text-align:center;padding:20px}.mindCenter b{font-size:2rem}.clusterGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.cluster{border-radius:24px;padding:16px;border:1px solid var(--line)}.cluster h3{margin:0 0 10px}.clusterWords{display:flex;flex-wrap:wrap;gap:8px}.clusterWord{background:#fff;border-radius:14px;padding:10px 12px;border:1px solid rgba(0,0,0,.06);font-weight:900}.pink{background:var(--pinkSoft)}.yellow{background:var(--yellowSoft)}.green{background:var(--greenSoft)}.blue{background:var(--blueSoft)}
+    .detailCard{margin-top:16px}.detailTop{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.detailWord{font-size:2.2rem;font-weight:950}.detailMeta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.infoBox{padding:12px;border-radius:15px;background:#f8f9fc;border:1px solid var(--line)}.infoBox label{font-size:.74rem;color:var(--muted);display:block;font-weight:900;margin-bottom:5px}.infoBox p{margin:0;line-height:1.55}
+    .parentGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.settingRow{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.settingRow:last-child{border-bottom:0}.settingRow select,.settingRow input[type=file]{max-width:55%}.small{font-size:.83rem;color:var(--muted);line-height:1.5}.textarea{width:100%;min-height:120px;border:1px solid var(--line);border-radius:14px;padding:12px;resize:vertical}.toast{position:fixed;left:50%;top:18px;transform:translateX(-50%) translateY(-80px);background:#273249;color:white;border-radius:999px;padding:11px 16px;z-index:50;box-shadow:var(--shadow);transition:.25s;font-weight:800;max-width:calc(100% - 24px);text-align:center}.toast.show{transform:translateX(-50%) translateY(0)}
+    .confetti{pointer-events:none;position:fixed;inset:0;overflow:hidden;z-index:49}.confetti i{position:absolute;top:-20px;width:9px;height:14px;border-radius:2px;animation:fall 1.3s linear forwards}@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+    @media(max-width:900px){.wordGrid{grid-template-columns:repeat(3,1fr)}.modeGrid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:720px){.hero{grid-template-columns:1fr}.wordGrid{grid-template-columns:repeat(2,1fr)}.choices{grid-template-columns:1fr}.clusterGrid{grid-template-columns:1fr}.detailMeta,.parentGrid{grid-template-columns:1fr}.topbar{align-items:flex-start}.topbar .pill{font-size:.78rem}.miniStats{grid-template-columns:repeat(2,1fr)}.nav{bottom:8px}.app{padding-bottom:100px}}
+    @media(max-width:390px){.wordGrid{grid-template-columns:1fr 1fr}.modeGrid{grid-template-columns:1fr}.heroTitle{font-size:1.85rem}.logo{width:46px;height:46px}.nav button{font-size:.69rem}}
+    @media print{body{background:#fff}.topbar,.nav,.sectionHead .pill,#detailCard{display:none!important}.app{max-width:none;padding:0}.view{display:none!important}#view-mind{display:block!important}.clusterGrid{grid-template-columns:1fr 1fr}.cluster{break-inside:avoid}.mindCenter{margin-bottom:10px;box-shadow:none}.panel{box-shadow:none}}
+  </style>
+</head>
+<body>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="confetti" id="confetti"></div>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand"><div class="logo">字</div><div><h1>生字冒險</h1><div class="sub">7日記憶訓練｜讀・解・用・寫</div></div></div>
+      <button class="pill" id="speakWelcome">🔊 粵語讀音</button>
+    </header>
+
+    <section class="view active" id="view-home">
+      <div class="hero">
+        <div class="panel heroMain">
+          <div class="eyebrow">今日任務</div>
+          <div class="heroTitle">每日 10 分鐘，<br><span class="accent">真正記得</span> 生字。</div>
+          <div class="heroText">不是不停抄寫：先看懂，再由腦內想返出嚟。答錯的詞會隔幾題再出現，直到真正掌握。</div>
+          <div class="heroActions"><button class="primary" id="startToday">▶ 開始今日訓練</button><button class="secondary" data-go="mind">🧠 看記憶地圖</button></div>
+        </div>
+        <div class="panel dayBox">
+          <div><div class="small">本週進度</div><div class="dayNum">Day <span id="dayNumber">1</span></div><div id="dayDescription" class="small"></div></div>
+          <div class="progressTrack"><div class="progressFill" id="weekProgress"></div></div>
+          <div class="miniStats">
+            <div class="miniStat"><b id="statRead">0</b><span>🔊 識讀</span></div>
+            <div class="miniStat"><b id="statMeaning">0</b><span>💡 識解</span></div>
+            <div class="miniStat"><b id="statUse">0</b><span>💬 識用</span></div>
+            <div class="miniStat"><b id="statWrite">0</b><span>✏️ 識寫</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sectionHead"><div><h2>今天的詞語</h2><p>每個詞都有「讀、解、用、寫」四項進度。</p></div><button class="pill" id="reviewWeak">重溫弱項</button></div>
+      <div class="wordGrid" id="todayWords"></div>
+
+      <div class="sectionHead"><div><h2>8 種練習</h2><p>由認識 → 提取 → 使用 → 默寫。</p></div></div>
+      <div class="modeGrid" id="modeGrid"></div>
+    </section>
+
+    <section class="view" id="view-practice">
+      <div class="practiceShell">
+        <div class="practiceTop"><button class="secondary" data-go="home">← 返回</button><div class="pill" id="practiceCounter">1 / 10</div></div>
+        <div class="progressTrack" style="margin-bottom:12px"><div class="progressFill" id="sessionProgress"></div></div>
+        <div class="qCard" id="questionCard"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-mind">
+      <div class="sectionHead"><div><h2>記憶地圖</h2><p>把散開的詞放進「腦內櫃桶」。點一個詞可以看完整提示。</p></div><button class="pill" id="printMind">🖨️ 列印 A4</button></div>
+      <div class="mindShell">
+        <div class="mindCenter"><div style="font-size:2.4rem">🧠</div><b>17 個生字</b><div class="small">心情・行動・景物・環境</div></div>
+        <div class="clusterGrid" id="clusterGrid"></div>
+        <div class="panel detailCard" id="detailCard"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-progress">
+      <div class="sectionHead"><div><h2>學習進度</h2><p>3 顆綠點代表該項已穩定掌握。</p></div></div>
+      <div class="wordGrid" id="progressWords"></div>
+      <div class="panel" style="margin-top:16px"><b>掌握規則</b><p class="small">答啱會加 1；答錯會回退 1，並在 3–5 題後再出現。讀／解／用／寫各自累積至 3，才算真正過關。</p></div>
+    </section>
+
+    <section class="view" id="view-parent">
+      <div class="sectionHead"><div><h2>家長模式</h2><p>設定週期、備份進度、重新開始。V1 不會把資料傳上網。</p></div></div>
+      <div class="parentGrid">
+        <div class="panel">
+          <h3 style="margin-top:0">本週設定</h3>
+          <div class="settingRow"><div><b>目前 Day</b><div class="small">可手動切換，方便補課。</div></div><select id="daySelect" class="pill"><option value="1">Day 1</option><option value="2">Day 2</option><option value="3">Day 3</option><option value="4">Day 4</option><option value="5">Day 5</option><option value="6">Day 6</option><option value="7">Day 7</option></select></div>
+          <div class="settingRow"><div><b>粵語語音</b><div class="small">使用裝置內建語音；不同裝置聲線會不同。</div></div><button class="secondary" id="testVoice">測試</button></div>
+          <div class="settingRow"><div><b>重新開始本週</b><div class="small">會清除所有學習進度。</div></div><button class="danger" id="resetProgress">清除進度</button></div>
+        </div>
+        <div class="panel">
+          <h3 style="margin-top:0">備份 / 還原</h3>
+          <p class="small">進度只存在此瀏覽器。可下載 JSON 備份，日後在另一部裝置匯入。</p>
+          <div class="heroActions"><button class="secondary" id="exportBtn">⬇️ 匯出進度</button><label class="secondary" style="display:inline-flex;align-items:center;cursor:pointer">⬆️ 匯入進度<input type="file" id="importFile" accept="application/json" hidden></label></div>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:14px"><h3 style="margin-top:0">本版字庫（固定 17 詞）</h3><div id="parentWordList" class="small"></div></div>
+    </section>
+  </main>
+
+  <nav class="nav" aria-label="主選單">
+    <button class="active" data-go="home"><strong>🏠</strong>今日</button>
+    <button data-go="mind"><strong>🧠</strong>地圖</button>
+    <button id="navPractice"><strong>🎯</strong>練習</button>
+    <button data-go="progress"><strong>📈</strong>進度</button>
+    <button data-go="parent"><strong>⚙️</strong>家長</button>
+  </nav>
+
+<script>
+(() => {
+  'use strict';
+  const WORDS = [
+    {w:'惶恐',cat:'心情與態度',icon:'😰',meaning:'非常害怕而不安。',example:'聽到怪聲後，小明心裡很惶恐。',homo:['皇','孔'],parts:'惶＝忄＋皇；恐下面有「心」。'},
+    {w:'憤憤不平',cat:'心情與態度',icon:'😤',meaning:'心裡很不服氣。',example:'他被誤會後，心裡憤憤不平。',homo:['奮','評'],parts:'「憤」有忄，和心情有關；「平」記住最後一字。'},
+    {w:'忍受',cat:'心情與態度',icon:'😣',meaning:'把痛苦或不舒服忍住。',example:'他忍受著疼痛繼續走路。',homo:['隱','壽'],parts:'忍＝刃＋心；受中間有「冖」。'},
+    {w:'懊悔',cat:'心情與態度',icon:'😔',meaning:'後悔、自責。',example:'他為自己的粗心感到懊悔。',homo:['澳','晦'],parts:'懊、悔都有忄，都是心裡的感受。'},
+    {w:'敬佩',cat:'心情與態度',icon:'🌟',meaning:'尊敬和佩服。',example:'我很敬佩勇敢的醫護人員。',homo:['徑','配'],parts:'佩左邊是亻；想到「佩服一個人」。'},
+    {w:'饒恕',cat:'心情與態度',icon:'🤝',meaning:'原諒別人。',example:'他真心道歉後，老師饒恕了他。',homo:['姚','庶'],parts:'饒左邊是飠；恕下面有「心」。'},
+    {w:'堅決',cat:'心情與態度',icon:'✊',meaning:'態度堅定，不改變。',example:'他堅決地說要努力完成。',homo:['肩','訣'],parts:'堅下面有土；決左邊是氵。'},
+    {w:'嚴懲',cat:'行動與應對',icon:'⚖️',meaning:'嚴厲地處罰。',example:'做錯事的人要受到嚴懲。',homo:['鹽','程'],parts:'嚴字筆畫多，分上、中、下三區看；懲下面有心。'},
+    {w:'冒險',cat:'行動與應對',icon:'🧭',meaning:'去做有危險的事。',example:'消防員冒險救人。',homo:['帽'],parts:'險左邊是阝；想到走進危險地方。'},
+    {w:'抵禦',cat:'行動與應對',icon:'🛡️',meaning:'抵抗、防禦。',example:'城牆可以抵禦外敵。',homo:['底','遇'],parts:'抵左邊是扌，是動作；禦下面有示。'},
+    {w:'遭遇',cat:'行動與應對',icon:'🌧️',meaning:'碰上、遇到。',example:'他在旅途中遭遇大雨。',homo:['糟','寓'],parts:'遭、遇都有辶，像一路走時碰上事情。'},
+    {w:'懸崖',cat:'景物與事物',icon:'⛰️',meaning:'高而陡的山崖。',example:'山路旁就是懸崖，要小心。',homo:['玄','捱'],parts:'懸下面有心；崖上面是山。'},
+    {w:'洞穴',cat:'景物與事物',icon:'🦇',meaning:'山洞或動物住的洞。',example:'小蝙蝠住在洞穴裡。',homo:['動','月'],parts:'洞左邊是氵；穴本身像洞口。'},
+    {w:'砸碎',cat:'景物與事物',icon:'🏺💥',meaning:'用力打碎。',example:'弟弟不小心把杯子砸碎了。',homo:['稅'],parts:'砸、碎都有石字旁，想到硬物碎裂。'},
+    {w:'統治',cat:'景物與事物',icon:'👑',meaning:'管理和控制國家或地方。',example:'古代皇帝統治國家。',homo:['桶','字'],parts:'統左邊是糹；治左邊是氵。'},
+    {w:'曝曬',cat:'環境與侵害',icon:'☀️',meaning:'在猛烈陽光下晒著。',example:'花盆放在外面曝曬太久，葉子枯了。',homo:['瀑'],parts:'曝、曬都有日字旁，和陽光有關。'},
+    {w:'侵襲',cat:'環境與侵害',icon:'🌪️',meaning:'突然來到並造成傷害。',example:'颱風侵襲沿海地區。',homo:['集'],parts:'侵左邊是亻；襲下面是衣。'}
+  ];
+
+  const CAT_META = {
+    '心情與態度':{cls:'pink',emoji:'❤️',desc:'想法、感受、面對事情的態度'},
+    '行動與應對':{cls:'yellow',emoji:'🏃',desc:'行動、應付情況、解決問題'},
+    '景物與事物':{cls:'green',emoji:'🌳',desc:'自然景物、具體事物'},
+    '環境與侵害':{cls:'blue',emoji:'🌦️',desc:'環境影響、災害與侵害'}
+  };
+  const DAY_BASE = {
+    1:['惶恐','憤憤不平','忍受','懊悔','敬佩'],
+    2:['嚴懲','冒險','抵禦','遭遇','堅決'],
+    3:['懸崖','洞穴','曝曬','侵襲','砸碎'],
+    4:['統治','饒恕'],
+    5:WORDS.map(x=>x.w),6:WORDS.map(x=>x.w),7:WORDS.map(x=>x.w)
+  };
+  const MODES = [
+    {id:'visual',emoji:'🖼️',name:'看圖猜詞',desc:'看圖像和情境，想返個詞出嚟。'},
+    {id:'listen',emoji:'🔊',name:'聽音選字',desc:'聽粵語讀音，分清正字。'},
+    {id:'meaning',emoji:'💡',name:'意思反推',desc:'只看意思，自己找出正確詞。'},
+    {id:'fill',emoji:'🧩',name:'補字挑戰',desc:'遮走一個字，揀返正確寫法。'},
+    {id:'sentence',emoji:'💬',name:'造句',desc:'自己講一句，再和例句比較。'},
+    {id:'write',emoji:'✏️',name:'手寫默字',desc:'聽讀音後在格仔寫，再自我核對。'},
+    {id:'story',emoji:'📚',name:'故事串詞',desc:'用 4 個詞講一個小故事。'},
+    {id:'review',emoji:'🔁',name:'錯字重溫',desc:'優先重考最未穩定的詞。'}
+  ];
+
+  const STORAGE_KEY='hanzi-adventure-v1';
+  function blankState(){
+    const p={}; WORDS.forEach(x=>p[x.w]={read:0,meaning:0,use:0,write:0,wrong:0,last:0});
+    return {version:1,day:1,progress:p,sessions:0,updatedAt:Date.now()};
+  }
+  function normalizeState(x){
+    const base=blankState();
+    if(!x||typeof x!=='object') return base;
+    base.day=Math.max(1,Math.min(7,Number(x.day)||1));
+    base.sessions=Math.max(0,Number(x.sessions)||0);
+    WORDS.forEach(({w})=>{
+      const src=(x.progress&&x.progress[w])||{};
+      ['read','meaning','use','write'].forEach(k=>base.progress[w][k]=clamp(Number(src[k])||0));
+      base.progress[w].wrong=Math.max(0,Number(src.wrong)||0);
+      base.progress[w].last=Math.max(0,Number(src.last)||0);
+    });
+    return base;
+  }
+  function loadState(){
+    try{return normalizeState(JSON.parse(localStorage.getItem(STORAGE_KEY)));}catch(e){return blankState()}
+  }
+  let state=loadState();
+  let currentMode='meaning', queue=[], qIndex=0, currentQ=null, answered=false;
+  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+  const wordBy=w=>WORDS.find(x=>x.w===w);
+  const clamp=(n,a=0,b=3)=>Math.max(a,Math.min(b,n));
+  const shuffle=a=>{const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b};
+  function save(){state.updatedAt=Date.now();localStorage.setItem(STORAGE_KEY,JSON.stringify(state));renderAll();}
+  function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1800)}
+  function confetti(){const c=$('#confetti');c.innerHTML='';const cols=['#ff7fa8','#f7b731','#55b96a','#4d9de0','#8d6adf'];for(let i=0;i<36;i++){const e=document.createElement('i');e.style.left=Math.random()*100+'%';e.style.background=cols[i%cols.length];e.style.animationDelay=(Math.random()*.25)+'s';c.appendChild(e)}setTimeout(()=>c.innerHTML='',1600)}
+  function speak(text){
+    if(!('speechSynthesis' in window)){toast('這部裝置未支援語音播放');return}
+    speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='zh-HK';u.rate=.72;u.pitch=1.03;
+    const vs=speechSynthesis.getVoices();const v=vs.find(v=>/yue|zh-HK/i.test(v.lang))||vs.find(v=>/zh/i.test(v.lang));if(v)u.voice=v;speechSynthesis.speak(u);
+  }
+  function weakest(n=3,exclude=[]){
+    return WORDS.filter(x=>!exclude.includes(x.w)).map(x=>({w:x.w,s:Object.values(state.progress[x.w]).slice(0,4).reduce((a,b)=>a+b,0)-state.progress[x.w].wrong*.5})).sort((a,b)=>a.s-b.s).slice(0,n).map(x=>x.w);
+  }
+  function dayWords(){
+    if(state.day===4)return [...DAY_BASE[4],...weakest(3,DAY_BASE[4])];
+    return DAY_BASE[state.day]||WORDS.map(x=>x.w);
+  }
+  function masteryCount(dim){return WORDS.filter(x=>state.progress[x.w][dim]>=3).length}
+  function totalMastery(){return ['read','meaning','use','write'].reduce((n,d)=>n+masteryCount(d),0)}
+  function renderHome(){
+    $('#dayNumber').textContent=state.day;
+    const desc={1:'先建立「心情詞」的圖像與意思。',2:'加入行動詞，開始混合昨日舊詞。',3:'用景物圖像加強記憶。',4:'補完最後兩詞，再攻最弱 3 個。',5:'17 詞混合提取，不再只按順序背。',6:'重點練造句、手寫與故事。',7:'小測驗：讀、解、用、寫總複習。'}[state.day];
+    $('#dayDescription').textContent=desc;
+    $('#weekProgress').style.width=((state.day-1)/6*100)+'%';
+    $('#statRead').textContent=masteryCount('read')+'/17';$('#statMeaning').textContent=masteryCount('meaning')+'/17';$('#statUse').textContent=masteryCount('use')+'/17';$('#statWrite').textContent=masteryCount('write')+'/17';
+    $('#todayWords').innerHTML=dayWords().map(w=>wordCard(wordBy(w))).join('');
+    $('#modeGrid').innerHTML=MODES.map(m=>`<button class="modeCard" data-mode="${m.id}"><div class="modeEmoji">${m.emoji}</div><b>${m.name}</b><span>${m.desc}</span></button>`).join('');
+    $$('.modeCard').forEach(b=>b.addEventListener('click',()=>startPractice(b.dataset.mode)));
+    $$('#todayWords .wordCard').forEach(b=>b.addEventListener('click',()=>showDetail(b.dataset.word,'home')));
+  }
+  function wordCard(x){
+    const p=state.progress[x.w]; const sum=p.read+p.meaning+p.use+p.write;
+    return `<button class="wordCard" data-word="${x.w}" aria-label="${x.w}"><div class="wordIcon">${x.icon}</div><div class="wordName">${x.w}</div><div class="wordMeaning">${x.meaning}</div><div class="stars">🔊${p.read>=3?'★':'☆'}　💡${p.meaning>=3?'★':'☆'}　💬${p.use>=3?'★':'☆'}　✏️${p.write>=3?'★':'☆'}</div><div class="scoreDots">${Array.from({length:12},(_,i)=>`<i class="dot ${i<sum?'on':''}"></i>`).join('')}</div></button>`;
+  }
+  function renderProgress(){
+    $('#progressWords').innerHTML=WORDS.map(wordCard).join('');
+    $$('#progressWords .wordCard').forEach(b=>b.addEventListener('click',()=>showDetail(b.dataset.word,'progress')));
+  }
+  function renderMind(){
+    $('#clusterGrid').innerHTML=Object.entries(CAT_META).map(([cat,m])=>`<section class="cluster ${m.cls}"><h3>${m.emoji} ${cat}</h3><div class="small" style="margin-bottom:10px">${m.desc}</div><div class="clusterWords">${WORDS.filter(x=>x.cat===cat).map(x=>`<button class="clusterWord" data-word="${x.w}">${x.icon} ${x.w}</button>`).join('')}</div></section>`).join('');
+    $$('.clusterWord').forEach(b=>b.addEventListener('click',()=>renderDetail(wordBy(b.dataset.word))));
+    renderDetail(WORDS[0]);
+  }
+  function renderDetail(x){
+    const p=state.progress[x.w];
+    $('#detailCard').innerHTML=`<div class="detailTop"><div><div class="detailWord">${x.icon} ${x.w}</div><div class="homophone">🔊 同音提示：${x.homo.join('、')}</div></div><button class="secondary" id="detailSpeak">🔊 聽讀音</button></div><div class="detailMeta"><div class="infoBox"><label>簡單意思</label><p>${x.meaning}</p></div><div class="infoBox"><label>例句</label><p>${x.example}</p></div><div class="infoBox"><label>寫法記憶</label><p>${x.parts}</p></div><div class="infoBox"><label>目前熟練度</label><p>讀 ${p.read}/3　解 ${p.meaning}/3　用 ${p.use}/3　寫 ${p.write}/3</p></div></div>`;
+    $('#detailSpeak').addEventListener('click',()=>speak(x.w));
+  }
+  function showDetail(w,from){go('mind');renderDetail(wordBy(w));setTimeout(()=>$('#detailCard').scrollIntoView({behavior:'smooth',block:'center'}),50)}
+  function renderParent(){
+    $('#daySelect').value=String(state.day);
+    $('#parentWordList').innerHTML=WORDS.map(x=>`<b>${x.w}</b>｜${x.meaning}｜同音：${x.homo.join('、')}`).join('<br>');
+  }
+  function renderAll(){renderHome();renderProgress();renderMind();renderParent();}
+  function go(view){
+    $$('.view').forEach(v=>v.classList.toggle('active',v.id===`view-${view}`));
+    $$('.nav button[data-go]').forEach(b=>b.classList.toggle('active',b.dataset.go===view));
+    if(view==='practice'){$$('.nav button').forEach(b=>b.classList.remove('active'));$('#navPractice').classList.add('active')}
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function buildQueue(mode){
+    let pool = mode==='review'?weakest(6):dayWords();
+    if(state.day>=5 && mode!=='review') pool=WORDS.map(x=>x.w);
+    const targetCount = mode==='story'?3:(state.day===7?14:10);
+    const out=[];
+    for(let i=0;i<targetCount;i++) out.push({w:pool[i%pool.length],mode});
+    return shuffle(out);
+  }
+  function startPractice(mode='meaning'){
+    currentMode=mode;queue=buildQueue(mode);qIndex=0;answered=false;go('practice');renderQuestion();
+  }
+  function renderQuestion(){
+    if(qIndex>=queue.length){finishSession();return}
+    currentQ=queue[qIndex];answered=false;
+    $('#practiceCounter').textContent=`${qIndex+1} / ${queue.length}`;$('#sessionProgress').style.width=(qIndex/queue.length*100)+'%';
+    const x=wordBy(currentQ.w);const card=$('#questionCard');
+    if(currentQ.mode==='visual') renderVisual(card,x);
+    else if(currentQ.mode==='listen') renderListen(card,x);
+    else if(currentQ.mode==='meaning') renderMeaning(card,x);
+    else if(currentQ.mode==='fill') renderFill(card,x);
+    else if(currentQ.mode==='sentence') renderSentence(card,x);
+    else if(currentQ.mode==='write') renderWrite(card,x);
+    else if(currentQ.mode==='story') renderStory(card);
+    else renderMixed(card,x);
+  }
+  function optionsFor(x){return shuffle([x,...shuffle(WORDS.filter(y=>y.w!==x.w)).slice(0,3)])}
+  function baseQuestion(type,prompt,icon=''){return `<div class="qType">${type}</div>${icon?`<div class="qIcon">${icon}</div>`:''}<div class="qPrompt">${prompt}</div>`}
+  function renderChoices(card,x,prompt,type,icon,dim){
+    const ops=optionsFor(x);card.innerHTML=baseQuestion(type,prompt,icon)+`<div class="choices">${ops.map(o=>`<button class="choice" data-answer="${o.w}">${o.w}</button>`).join('')}</div><div class="feedback" id="feedback"></div><div class="qActions"><button class="ghost" id="hintBtn">💡 提示</button></div>`;
+    $$('.choice').forEach(b=>b.addEventListener('click',()=>answerChoice(b,x,dim)));
+    $('#hintBtn').addEventListener('click',()=>toast(`同音提示：${x.homo.join('、')}`));
+  }
+  function renderVisual(card,x){renderChoices(card,x,'看這個情境，哪個詞最適合？','🖼️ 看圖猜詞',x.icon,'meaning')}
+  function renderMeaning(card,x){renderChoices(card,x,x.meaning,'💡 意思反推','🧠','meaning')}
+  function renderListen(card,x){
+    renderChoices(card,x,'按播放，聽清楚後選出正確詞語。','🔊 聽音選字','👂','read');
+    const a=$('#questionCard .qActions');const b=document.createElement('button');b.className='secondary';b.textContent='🔊 播放讀音';b.addEventListener('click',()=>speak(x.w));a.prepend(b);setTimeout(()=>speak(x.w),220);
+  }
+  function answerChoice(btn,x,dim){if(answered)return;answered=true;const good=btn.dataset.answer===x.w;$$('.choice').forEach(b=>{b.disabled=true;if(b.dataset.answer===x.w)b.classList.add('correct')});if(!good)btn.classList.add('wrong');applyResult(x.w,dim,good);feedback(good,x);nextButton()}
+  function feedback(good,x){const f=$('#feedback');f.className='feedback show '+(good?'good':'bad');f.innerHTML=good?`✓ 答啱！<b>${x.w}</b>：${x.meaning}`:`未啱。答案是 <b>${x.w}</b>。<br>${x.parts}`}
+  function nextButton(){let a=$('#questionCard .qActions');if(!a){a=document.createElement('div');a.className='qActions';$('#questionCard').appendChild(a)}const n=document.createElement('button');n.className='primary';n.textContent='下一題 →';n.addEventListener('click',nextQuestion);a.appendChild(n)}
+  function nextQuestion(){qIndex++;renderQuestion()}
+  function applyResult(w,dim,good){const p=state.progress[w];if(good){p[dim]=clamp(p[dim]+1);p.last=Date.now()}else{p[dim]=clamp(p[dim]-1);p.wrong=(p.wrong||0)+1;const pos=Math.min(queue.length,qIndex+3+Math.floor(Math.random()*3));queue.splice(pos,0,{w,mode:currentQ.mode})}save()}
+  function renderFill(card,x){
+    const chars=[...x.w];const idx=Math.floor(Math.random()*chars.length);const correct=chars[idx];const masked=chars.map((c,i)=>i===idx?'＿':c).join('');
+    const distract=[...(x.homo||[]),...'人心山水日月天地雨風石王言心決受懼'].filter(c=>c!==correct);const ops=shuffle([correct,...shuffle([...new Set(distract)]).slice(0,3)]);
+    card.innerHTML=baseQuestion('🧩 補字挑戰',masked,'✍️')+`<div class="choices">${ops.map(c=>`<button class="choice" data-answer="${c}">${c}</button>`).join('')}</div><div class="feedback" id="feedback"></div><div class="qActions"><button class="ghost" id="fillMeaning">💡 看意思</button></div>`;
+    $$('.choice').forEach(b=>b.addEventListener('click',()=>{if(answered)return;answered=true;const good=b.dataset.answer===correct;$$('.choice').forEach(z=>{z.disabled=true;if(z.dataset.answer===correct)z.classList.add('correct')});if(!good)b.classList.add('wrong');applyResult(x.w,'write',good);feedback(good,x);nextButton()}));
+    $('#fillMeaning').addEventListener('click',()=>toast(x.meaning));
+  }
+  function renderSentence(card,x){
+    card.innerHTML=baseQuestion('💬 造句',`用「${x.w}」講一句。`,x.icon)+`<div class="clue">先自己講，唔使句子好長。講完先按「看例句」。</div><div class="qActions"><button class="secondary" id="showExample">看例句</button><button class="ghost" id="speakWord">🔊 讀一次</button></div><div class="feedback" id="feedback"></div>`;
+    $('#speakWord').addEventListener('click',()=>speak(x.w));
+    $('#showExample').addEventListener('click',()=>{const f=$('#feedback');f.className='feedback show';f.innerHTML=`例句：${x.example}<br><br>你剛才有正確用到「${x.w}」嗎？`;const a=$('#questionCard .qActions');a.innerHTML='<button class="primary" id="sentenceYes">✓ 我做到</button><button class="secondary" id="sentenceNo">再練一次</button>';$('#sentenceYes').addEventListener('click',()=>{applyResult(x.w,'use',true);nextQuestion()});$('#sentenceNo').addEventListener('click',()=>{applyResult(x.w,'use',false);nextQuestion()})});
+  }
+  function renderWrite(card,x){
+    card.innerHTML=baseQuestion('✏️ 手寫默字','先聽讀音，在下面寫出完整詞語。','👂')+`<div class="homophone">同音提示：${x.homo.join('、')}</div><div class="canvasWrap"><canvas id="writeCanvas" width="900" height="360" aria-label="手寫區"></canvas></div><div class="canvasTools"><button class="secondary" id="playWrite">🔊 再聽</button><button class="secondary" id="clearCanvas">清除</button><button class="primary" id="revealWrite">顯示答案</button></div><div class="answerReveal" id="writeAnswer">${x.w}</div><div class="qActions" id="writeJudge"></div>`;
+    setupCanvas();setTimeout(()=>speak(x.w),220);$('#playWrite').addEventListener('click',()=>speak(x.w));$('#clearCanvas').addEventListener('click',clearCanvas);$('#revealWrite').addEventListener('click',()=>{$('#writeAnswer').classList.add('show');$('#writeJudge').innerHTML='<button class="primary" id="writeYes">✓ 我寫啱</button><button class="secondary" id="writeNo">未識，再溫</button>';$('#writeYes').addEventListener('click',()=>{applyResult(x.w,'write',true);nextQuestion()});$('#writeNo').addEventListener('click',()=>{applyResult(x.w,'write',false);nextQuestion()})});
+  }
+  function setupCanvas(){const c=$('#writeCanvas'),ctx=c.getContext('2d');let draw=false;function guide(){ctx.clearRect(0,0,c.width,c.height);ctx.strokeStyle='#d7dce7';ctx.setLineDash([10,10]);ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(c.width/2,0);ctx.lineTo(c.width/2,c.height);ctx.moveTo(0,c.height/2);ctx.lineTo(c.width,c.height/2);ctx.stroke();ctx.setLineDash([])}guide();c._clear=guide;const pos=e=>{const r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*c.width/r.width,y:(e.clientY-r.top)*c.height/r.height}};c.onpointerdown=e=>{draw=true;c.setPointerCapture(e.pointerId);const p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y)};c.onpointermove=e=>{if(!draw)return;const p=pos(e);ctx.strokeStyle='#263149';ctx.lineWidth=8;ctx.lineCap='round';ctx.lineJoin='round';ctx.lineTo(p.x,p.y);ctx.stroke()};c.onpointerup=()=>draw=false;c.onpointercancel=()=>draw=false}
+  function clearCanvas(){const c=$('#writeCanvas');if(c&&c._clear)c._clear()}
+  function renderStory(card){
+    const pool=shuffle(state.day<5?dayWords():WORDS.map(x=>x.w)).slice(0,4).map(wordBy);currentQ.w=pool[0].w;
+    card.innerHTML=baseQuestion('📚 故事串詞','用下面 4 個詞，講一個短故事。','🎭')+`<div class="storyWords">${pool.map(x=>`<span class="storyChip">${x.icon} ${x.w}</span>`).join('')}</div><div class="clue">先口頭講。故事可以好短，只要四個詞用得合理就得。</div><div class="qActions"><button class="secondary" id="storyHint">看故事示例</button></div><div class="storyExample" id="storyExample"></div>`;
+    $('#storyHint').addEventListener('click',()=>{$('#storyExample').innerHTML=`<b>故事骨架：</b>先用「${pool[0].w}」開始 → 加入「${pool[1].w}」 → 再發生「${pool[2].w}」相關的事情 → 最後用「${pool[3].w}」收尾。<br><br><b>例句素材：</b>${pool.map(x=>x.example).join(' ')}`;$('#storyExample').classList.add('show');const a=$('#questionCard .qActions');a.innerHTML='<button class="primary" id="storyYes">✓ 四個詞都有用到</button><button class="secondary" id="storyNo">未做到</button>';$('#storyYes').addEventListener('click',()=>{pool.forEach(x=>{state.progress[x.w].use=clamp(state.progress[x.w].use+1)});save();nextQuestion()});$('#storyNo').addEventListener('click',()=>{pool.forEach(x=>{state.progress[x.w].wrong++});save();nextQuestion()})});
+  }
+  function renderMixed(card,x){const scores=state.progress[x.w];const dims=['read','meaning','use','write'];const d=dims.slice().sort((a,b)=>scores[a]-scores[b])[0];if(d==='write')renderFill(card,x);else if(d==='read')renderListen(card,x);else if(d==='use')renderSentence(card,x);else renderMeaning(card,x)}
+  function finishSession(){state.sessions++;save();$('#sessionProgress').style.width='100%';$('#questionCard').innerHTML=`<div style="text-align:center;padding:20px 0"><div style="font-size:4rem">🌟</div><div class="qPrompt">今輪完成！</div><p class="heroText" style="margin:auto">答錯的詞已經插回題目再次出現。下次會繼續優先重溫未穩定的項目。</p><div class="heroActions" style="justify-content:center"><button class="primary" id="againBtn">再玩一輪</button><button class="secondary" id="homeBtn">返回今日</button></div></div>`;confetti();$('#againBtn').addEventListener('click',()=>startPractice(currentMode));$('#homeBtn').addEventListener('click',()=>go('home'))}
+
+  $$('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
+  $('#startToday').addEventListener('click',()=>startPractice(state.day>=6?'review':'meaning'));
+  $('#navPractice').addEventListener('click',()=>startPractice('review'));
+  $('#reviewWeak').addEventListener('click',()=>startPractice('review'));
+  $('#speakWelcome').addEventListener('click',()=>speak('生字冒險。每日十分鐘，讀、解、用、寫。'));
+  $('#daySelect').addEventListener('change',e=>{state.day=Number(e.target.value);save();toast(`已切換到 Day ${state.day}`)});
+  $('#testVoice').addEventListener('click',()=>speak('惶恐，嚴懲，懸崖，曝曬。'));
+  $('#printMind').addEventListener('click',()=>window.print());
+  $('#resetProgress').addEventListener('click',()=>{if(confirm('確定清除全部 17 個詞的學習進度？')){state=blankState();save();toast('已重新開始本週')}});
+  $('#exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='生字冒險-學習進度.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)});
+  $('#importFile').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(!x.progress||!x.version)throw Error();state=normalizeState(x);save();toast('進度已匯入')}catch(err){toast('檔案格式不正確')}};r.readAsText(f);e.target.value=''});
+  renderAll();
+  if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+})();
+</script>
+</body>
+</html>
